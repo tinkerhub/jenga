@@ -1,0 +1,61 @@
+body {
+    background: #C1EDD9;
+    font-family: 'DM Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    padding: 40px 0px;
+}
+
+.myForm {
+    background: white;
+    border-radius: 8px;
+    padding: 40px 20px; 
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.subtext {
+    color: #696969;
+    padding-bottom: 20px;
+}
+
+/* Animation */
+
+@keyframes fadeInUp {
+    from {
+        transform: translate3d(0,40px,0)
+    }
+
+    to {
+        transform: translate3d(0,0,0);
+        opacity: 1
+    }
+}
+
+@-webkit-keyframes fadeInUp {
+    from {
+        transform: translate3d(0,40px,0)
+    }
+
+    to {
+        transform: translate3d(0,0,0);
+        opacity: 1
+    }
+}
+
+.animated {
+    animation-duration: 2s;
+    animation-fill-mode: both;
+    -webkit-animation-duration: 2s;
+    -webkit-animation-fill-mode: both
+}
+
+.animatedFadeInUp {
+    opacity: 0
+}
+
+.fadeInUp {
+    opacity: 0;
+    animation-name: fadeInUp;
+    -webkit-animation-name: fadeInUp;
+}
