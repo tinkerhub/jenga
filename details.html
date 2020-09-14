@@ -28,12 +28,139 @@
                 <input type="text" class="form-control" id="mobileNumber" maxlength="10">
                 <small id="supportText" class="form-text text-muted">Please enter your 10 digit mobile number</small>
               </div>
-              <a href="otp.html" type="button" class="btn btn-primary btn-block" >Get OTP</a>
+
+              <div class="form-group">
+                <label for="name">My legal name is</label>
+                <input type="text" class="form-control" id="name" >
+                <small id="supportText" class="form-text text-muted">eg: Aaron Hillel Swartz</small>
+              </div>
+
+              <div class="form-group">
+                <label for="nick_name">Please call me</label>
+                <input type="text" class="form-control" id="nick_name" >
+                <small id="supportText" class="form-text text-muted">Use your first name or a nickname. eg: aaron, psbots, meharmp</small>
+              </div>
+
+              <div class="form-group">
+                <label for="dob">I was born on </label>
+                <input type="date" class="form-control" id="dob" >
+                </div>
+
+                <div class="form-group">
+                  <label for="email">My email address is</label>
+                  <input type="email" class="form-control" id="email" >
+                  </div>
+
+                  <div class="form-group">
+                    <label for="pronoun">I prefer to use the pronoun</label>
+                    <select name="pronoun" class="form-control" id="pronoun">
+                      <option value="He/Him">He/Him</option>
+                      <option value="She/Her">She/Her</option>
+                      <option value="They/Them">They/Them</option>
+                    </select>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="reg_type">I want to be part of TinkerHub Foundation and the best way to describe me is </label>
+                      <select name="reg_type" class="form-control" id="reg_type">
+                        <option value="student">A college / school student 👨‍🎓️</option>
+                        <option value="graduate">A recent graduate</option>
+                        <option value="other">A professional/freelancer/startup founder 💼</option>
+                      </select>
+                      </div>
+
+                      <div class="form-group">
+                        <label for="Community">TinkerHub Campus Community is </label>
+                        <select name="community" class="form-control" id="community" >
+                          <option value="active">Yes, there is an active community </option>
+                          <option value="fresh">Nope, I never heard about TinkerHub community in my college</option> 
+                        </select>
+                        <small id="supportText" class="form-text text-muted">If you are unsure, here is the list of active : <a href="//airtable.com/shryTztrd8m0lCzqn/tbl4Orty5RXql5dKD">TinkerHub Campus communities</a></small>
+                        </div>
+
+                        <div class="form-group">
+                          <label for="college">I currently study at</label>
+                          <input type="text" class="form-control" id="college" >
+                          </div>
+
+                          <div class="form-group">
+                            <label for="fresh_college">I study at</label>
+                            <input type="text" class="form-control" id="fresh_college" >
+                            <small id="supportText" class="form-text text-muted">Preferred format: College Name, Place, District</small>
+                            </div>
+
+                            <div class="form-group">
+                              <label for="stream">My stream of study is </label>
+                              <select name="stream" class="form-control" id="stream">
+                                <option value="BTech">BTech</option>
+                                <option value="Polytechnic">Polytechnic</option>
+                                <option value="Bachelor of Science">Bachelor of Science</option>
+                                <option value="High School / Higher Secondary">High School / Higher Secondary</option>
+                                <option value="Bachelor of Arts">Bachelor of Arts</option>
+                                <option value="Post Graduation Programs">Post Graduation Programs</option>
+                              </select>
+                              </div>  
+
+                              <div class="form-group">
+                                <label for="year">As of now, I'll be graduating on</label>
+                                <select name="year" class="form-control" id="year">
+                                  <option value="2020">2020</option>
+                                  <option value="2021">2021</option>
+                                  <option value="2022">2022</option>
+                                  <option value="2023">2023</option>
+                                  <option value="2024">2024</option>
+                                  <option value="2025">2025</option>
+                                </select>
+                                <small id="supportText" class="form-text text-muted">Specify the year.</small>
+                                </div>  
+
+                                <div class="form-group">
+                                  <label for="reason">I want to join Tinkerhub because..</label>
+                                  <textarea name="reason" rows="10" cols="30" class="form-text text-muted"></textarea>
+                                  <small id="supportText" class="form-text text-muted">This answer will help us to understand you better and handle your application accordingly.  </small>
+                                  </div>
+
+
+                                  <div class="form-group">
+                                    <label for="contribute">And here are a few areas I would ❤️ to be part of </label>
+                                    <select name="contribute" class="form-control" id="contribute">
+                                      <option value="OpenSource">OpenSource Project Contribution</option>
+                                      <option value="mentor">Mentor new devs</option>
+                                      <option value="Reach-out">Community Reach-out</option>
+                                      <option value="Fund">Fund Raising</option>
+                                      <option value="opportunities">Hunting opportunities for the community</option>
+                                      <option value="Hosting">Hosting events on-behalf of TH</option>
+                                    </select>
+                                    </div>  
+
+                                    <div class="form-group">
+                                      <label for="policy">Community policy</label>
+                                      <small id="supportText" class="form-text text-muted">To ensure that everything is in order, we ask that you accept our community policy & guideline before we moving forward. 
+                                        <a href="//www.notion.so/TinkerHub-Community-Policy-1-0-39eac3b2b25e43f58efb2243b647234c"> TinkerHub-Community-Policy</a>
+                                        
+                                        Please click below if you find our policy acceptable. If you want to talk, we are available at hello@tinkerhub.org
+                                        </small>
+                                        <input type="checkbox"  id="i accept" >
+                                        <label for="accept"> i accept</label><br>
+                                      
+                                      </div>
+    
+
+
+
+
+
+
+
+
+
+
+              <a href="otp.html" type="button" class="btn btn-primary btn-block" >Apply Now</a>
 
             </form>
             </div>
           </div>
-          <div class="col-sm-4"</div>
+          <div class="col-sm-4"></div>
     </div>
     </div>
   </body>
