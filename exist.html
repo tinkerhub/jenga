@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="css/master.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <title>Welcome to TinkerHub</title>
+  </head>
+  <body>
+    <div class="container main">
+      <div class="row form1 animated animatedFadeInUp fadeInUp">
+        <div class="col-sm-4"></div>
+        <div class="col-sm-4">
+       
+          <div class="col-12 myForm">
+            <div class="col-12">
+                <h1>You are already a member of TinkerHub 🎊</h1>
+                <p class="subtext">
+                  If you need any kind of assistance, please mail us at
+                  <a href="mailto:hello@tinkerhub.org?subject=Application%20Support">hello@tinkerhub.org</a>
+                </p>
+              </div>
+              <hr />
+              <div class="col align-self-center membership-id">
+                  <p>YOUR MEMBERSHIP ID</p>
+                  <h3 class="membership-id" id="memberid">recOsK5jELlOpC1II</h3>
+              </div>
+              <!-- The button used to copy the text -->
+              <button onclick="copy()" class="btn btn-primary btn-block">
+                Copy text
+              </button>
+  
+          </div>
+        </div>
+        <div class="col-sm-4"></div>
+      </div>
+    </div>
+    <script>
+      function copy() {
+        /* Get the text field */
+        var copyText = document.getElementById("memberid");
+
+        /* Select the text field */
+        copyText.select();
+        copyText.setSelectionRange(0, 99999); /*For mobile devices*/
+
+        /* Copy the text inside the text field */
+        document.execCommand("copy");
+
+        /* Alert the copied text */
+        alert("Copied the text: " + copyText.value);
+      }
+    </script>
+  </body>
+</html>
