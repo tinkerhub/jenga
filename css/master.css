@@ -59,6 +59,17 @@ body {
     opacity: 0
 }
 
+.col.align-self-center.membership-id {
+    text-align: center;
+    margin-bottom: 32px;
+    margin-top: 32px;
+}
+
+h1 {
+    line-height: 110%;
+    padding-bottom: 8px;
+}
+
 .fadeInUp {
     opacity: 0;
     animation-name: fadeInUp;
