@@ -43,29 +43,47 @@
                   <h3 class="membership-id" id="memberid">{{ session["MembershipId"] }}</h3>
               </div>
               <!-- The button used to copy the text -->
-              <button onclick="copy()" class="btn btn-primary btn-block">
+              <button onclick="copyToClipboard('memberid')" class="btn btn-primary btn-block" id="copyBtn">
                 Copy text
               </button>
-  
+              <div id="suc-msg" style="display: none; text-align: center; padding-top: 10px; color: green">Your membership id is copied to your clipboard.</div>
+
           </div>
         </div>
         <div class="col-sm-4"></div>
       </div>
     </div>
     <script>
-      function copy() {
-        /* Get the text field */
-        var copyText = document.getElementById("memberid");
+          function copyToClipboard(elementId) {
 
-        /* Select the text field */
-        copyText.select();
-        copyText.setSelectionRange(0, 99999); /*For mobile devices*/
+      // Create an auxiliary hidden input
+      var aux = document.createElement("input");
 
-        /* Copy the text inside the text field */
-        document.execCommand("copy");
+      // Get the text from the element passed into the input
+      aux.setAttribute("value", document.getElementById(elementId).innerHTML);
 
-        /* Alert the copied text */
-        alert("Copied the text: " + copyText.value);
+      // Append the aux input to the body
+      document.body.appendChild(aux);
+
+      // Highlight the content
+      aux.select();
+
+      // Execute the copy command
+      document.execCommand("copy");
+
+      // Remove the input from the body
+      document.body.removeChild(aux);
+
+      var msg = document.getElementById("suc-msg");
+      var copybtn = document.getElementById("copyBtn");
+      if (msg.style.display === "none") {
+          msg.style.display = "block";
+          copybtn.style.display = "none";
+      } else {
+          msg.style.display ="block";
+      };
+
+
       }
     </script>
   </body>

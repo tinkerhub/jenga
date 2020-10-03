@@ -100,18 +100,19 @@
                   <option value="Yes">Yes, there is an active community</option>
                   <option value="No">Nope, I never heard about TinkerHub community in my college</option>
                 </select>
-                <small id="supportText" class="form-text text-muted">If you are unsure, here is the list of active :
-                  <a href="http://airtable.com/shryTztrd8m0lCzqn/tbl4Orty5RXql5dKD">TinkerHub Campus communities</a>
-                </small>
               </div>
 
               <div class="form-group" id="active-campus">
-                <label for="College">I currently study at</label>
-                <input type="text" class="form-control" id="College" name="College"/>
+                <label for="College">Select your college community from this list</label>
+                <select class="form-control" id="College" name="College">
+                  {% for college in colleges %}
+                    <option  value="{{ college['id'] }}">{{ college['name'] }}</option>
+                  {% endfor %}
+                </select>
               </div>
 
               <div class="form-group" id="fresh-campus">
-                <label for="FreshCollege">I study at</label>
+                <label for="FreshCollege">I currently study at</label>
                 <input type="text" class="form-control" id="FreshCollege" name="FreshCollege"/>
                 <small id="supportText" class="form-text text-muted">Preferred format: College Name, Place, District</small>
               </div>
@@ -160,7 +161,7 @@
                   your application accordingly.
                 </small>
               </div>
-
+<!-- 
               <div class="form-group">
                 <label for="AreasOfInterest">And here are a few areas I would ❤️ to be part of : 
                 </label>
@@ -172,7 +173,7 @@
                   <option value="Hunting opportunities for the community">Hunting opportunities for the community</option>
                   <option value="Hosting events on-behalf of TH">Hosting events on-behalf of TH</option>
                 </select>
-              </div>
+              </div> -->
 
               <div class="form-group">
                 <label for="policy">Community policy</label>
