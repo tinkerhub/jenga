@@ -49,7 +49,7 @@
               </div>
 
               <div class="form-group">
-                <label for="FullName">My legal name is</label>
+                <label for="FullName">My legal name is<mark class="red">*</mark></label>
                 <input type="text" class="form-control" id="FullName" name="FullName"/>
                 <small id="supportText" class="form-text text-muted">eg: Aaron Hillel Swartz</small>
               </div>
@@ -64,12 +64,12 @@
               </div>
 
               <div class="form-group">
-                <label for="DOB">I was born on </label>
+                <label for="DOB">I was born on <mark class="red">*</mark></label>
                 <input type="date" class="form-control" id="DOB" name="DOB"/>
               </div>
 
               <div class="form-group">
-                <label for="Email">My email address is</label>
+                <label for="Email">My email address is<mark class="red">*</mark></label>
                 <input type="email" class="form-control" id="Email" name="Email"/>
               </div>
 
@@ -85,7 +85,7 @@
               <div class="form-group">
                 <label for="RegistrationType"
                   >I want to be part of TinkerHub Foundation and the best way to
-                  describe me is
+                  describe me is<mark class="red">*</mark>
                 </label>
                 <select name="RegistrationType" class="form-control" id="RegistrationType">
                   <option value="A college / school student 👨‍🎓️">A college / school student 👨‍🎓️</option>
@@ -95,7 +95,7 @@
               </div>
 
               <div class="form-group" id="community-1">
-                <label for="CampusCommunityActive">TinkerHub Campus Community is </label>
+                <label for="CampusCommunityActive">TinkerHub Campus Community is <mark class="red">*</mark></label>
                 <select name="CampusCommunityActive" class="form-control" id="CampusCommunityActive">
                   <option value="Yes">Yes, there is an active community</option>
                   <option value="No">Nope, I never heard about TinkerHub community in my college</option>
@@ -103,7 +103,7 @@
               </div>
 
               <div class="form-group" id="active-campus">
-                <label for="College">Select your college community from this list</label>
+                <label for="College">Select your college community from this list<mark class="red">*</mark></label>
                 <select class="form-control" id="College" name="College">
                   {% for college in colleges %}
                     <option  value="{{ college['id'] }}">{{ college['name'] }}</option>
@@ -112,13 +112,13 @@
               </div>
 
               <div class="form-group" id="fresh-campus">
-                <label for="FreshCollege">I currently study at</label>
+                <label for="FreshCollege">I currently study at<mark class="red">*</mark></label>
                 <input type="text" class="form-control" id="FreshCollege" name="FreshCollege"/>
                 <small id="supportText" class="form-text text-muted">Preferred format: College Name, Place, District</small>
               </div>
 
               <div class="form-group" id="stream">
-                <label for="StudyStream">My stream of study is </label>
+                <label for="StudyStream">My stream of study is <mark class="red">*</mark></label>
                 <select name="StudyStream" class="form-control" id="StudyStream">
                   <option value="BTech">BTech</option>
                   <option value="Polytechnic">Polytechnic</option>
@@ -136,7 +136,7 @@
               </div>
 
               <div class="form-group" id="year">
-                <label for="GraduationDate">As of now, I'll be graduating on</label>
+                <label for="GraduationDate">As of now, I'll be graduating on<mark class="red">*</mark></label>
                 <select name="GraduationDate" class="form-control" id="GraduationDate">
                   <option value="2020">2020</option>
                   <option value="2021">2021</option>

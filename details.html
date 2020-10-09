@@ -47,8 +47,8 @@
               </div>
 
               <div class="form-group">
-                <label for="name">My legal name is</label>
-                <input type="text" class="form-control" id="name" />
+                <label for="name">My legal name is<mark class="red">*</mark></label>
+                <input type="text" class="form-control" id="name" required/>
                 <small id="supportText" class="form-text text-muted"
                   >eg: Aaron Hillel Swartz</small
                 >
@@ -211,9 +211,11 @@
                 <input type="checkbox" id="i accept" />
                 <label for="accept"> i accept</label><br />
               </div>
-              <a href="otp.html" type="button" class="btn btn-primary btn-block"
-                >Apply Now</a
-              >
+              <!-- <a href="otp.html" type="button" class="btn btn-primary btn-block"
+                >Apply Now</a -->
+
+                <input id="sd3" type="submit" class="btn btn-primary btn-block" value="Apply Now" />
+              
             </form>
           </div>
         </div>
