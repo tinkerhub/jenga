@@ -56,7 +56,7 @@
 
               <div class="form-group">
                 <label for="NickName">Please call me</label>
-                <input type="text" class="form-control" id="NickName" name="NickName" />
+                <input type="text" class="form-control" id="NickName" name="NickName"  required/>
                 <small id="supportText" class="form-text text-muted"
                   >Use your first name or a nickname. eg: aaron, psbots,
                   meharmp</small
@@ -70,7 +70,7 @@
 
               <div class="form-group">
                 <label for="Email">My email address is<mark class="red">*</mark></label>
-                <input type="email" class="form-control" id="Email" name="Email"/>
+                <input type="email" class="form-control" id="Email" name="Email" required/>
               </div>
 
               <div class="form-group">
@@ -193,6 +193,8 @@
                 <label for="accept"> I Accept</label><br />
               </div>
               <button href="#" onclick="event.target.parentNode.submit();" type="button" class="btn btn-primary btn-block" name="apply">Apply Now</a>
+
+
             </form>
           </div>
         </div>
