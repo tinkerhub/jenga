@@ -50,13 +50,13 @@
 
               <div class="form-group">
                 <label for="FullName">My legal name is<mark class="red">*</mark></label>
-                <input type="text" class="form-control" id="FullName" name="FullName"/>
+                <input type="text" class="form-control" id="FullName" name="FullName" required/>
                 <small id="supportText" class="form-text text-muted">eg: Aaron Hillel Swartz</small>
               </div>
 
               <div class="form-group">
                 <label for="NickName">Please call me</label>
-                <input type="text" class="form-control" id="NickName" name="NickName"  required/>
+                <input type="text" class="form-control" id="NickName" name="NickName" />
                 <small id="supportText" class="form-text text-muted"
                   >Use your first name or a nickname. eg: aaron, psbots,
                   meharmp</small
@@ -65,7 +65,7 @@
 
               <div class="form-group">
                 <label for="DOB">I was born on <mark class="red">*</mark></label>
-                <input type="date" class="form-control" id="DOB" name="DOB"/>
+                <input type="date" class="form-control" id="DOB" name="DOB" required/>
               </div>
 
               <div class="form-group">
@@ -87,7 +87,7 @@
                   >I want to be part of TinkerHub Foundation and the best way to
                   describe me is<mark class="red">*</mark>
                 </label>
-                <select name="RegistrationType" class="form-control" id="RegistrationType">
+                <select name="RegistrationType" class="form-control" id="RegistrationType" required>
                   <option value="A college / school student 👨‍🎓️">A college / school student 👨‍🎓️</option>
                   <option value="A recent graduate">A recent graduate</option>
                   <option value="A professional/freelancer/startup founder 💼">A professional/freelancer/startup founder 💼</option>
@@ -96,7 +96,7 @@
 
               <div class="form-group" id="community-1">
                 <label for="CampusCommunityActive">TinkerHub Campus Community is <mark class="red">*</mark></label>
-                <select name="CampusCommunityActive" class="form-control" id="CampusCommunityActive">
+                <select name="CampusCommunityActive" class="form-control" id="CampusCommunityActive" required>
                   <option value="Yes">Yes, there is an active community</option>
                   <option value="No">Nope, I never heard about TinkerHub community in my college</option>
                 </select>
@@ -104,7 +104,7 @@
 
               <div class="form-group" id="active-campus">
                 <label for="College">Select your college community from this list<mark class="red">*</mark></label>
-                <select class="form-control" id="College" name="College">
+                <select class="form-control" id="College" name="College" required>
                   {% for college in colleges %}
                     <option  value="{{ college['id'] }}">{{ college['name'] }}</option>
                   {% endfor %}
@@ -113,13 +113,13 @@
 
               <div class="form-group" id="fresh-campus">
                 <label for="FreshCollege">I currently study at<mark class="red">*</mark></label>
-                <input type="text" class="form-control" id="FreshCollege" name="FreshCollege"/>
+                <input type="text" class="form-control" id="FreshCollege" name="FreshCollege" required/>
                 <small id="supportText" class="form-text text-muted">Preferred format: College Name, Place, District</small>
               </div>
 
               <div class="form-group" id="stream">
                 <label for="StudyStream">My stream of study is <mark class="red">*</mark></label>
-                <select name="StudyStream" class="form-control" id="StudyStream">
+                <select name="StudyStream" class="form-control" id="StudyStream" required>
                   <option value="BTech">BTech</option>
                   <option value="Polytechnic">Polytechnic</option>
                   <option value="Bachelor of Science">
@@ -137,7 +137,7 @@
 
               <div class="form-group" id="year">
                 <label for="GraduationDate">As of now, I'll be graduating on<mark class="red">*</mark></label>
-                <select name="GraduationDate" class="form-control" id="GraduationDate">
+                <select name="GraduationDate" class="form-control" id="GraduationDate" required>
                   <option value="2020">2020</option>
                   <option value="2021">2021</option>
                   <option value="2022">2022</option>
@@ -189,10 +189,10 @@
                   Please click below if you find our policy acceptable. If you
                   want to talk, we are available at hello@tinkerhub.org
                 </small>
-                <br /><input type="checkbox" id="accept" />
+                <br /><input type="checkbox" id="accept"  required/>
                 <label for="accept"> I Accept</label><br />
               </div>
-              <button href="#" onclick="event.target.parentNode.submit();" type="button" class="btn btn-primary btn-block" name="apply">Apply Now</a>
+              <button href="#" onclick="event.target.parentNode.submit();"  type="button" class="btn btn-primary btn-block" name="apply">Apply Now</a>
 
 
             </form>
@@ -244,6 +244,6 @@
           $("#fresh-campus").show();
         }
       }
-    </script>
+ </script>
   </body>
 </html>
