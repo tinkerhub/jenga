@@ -105,7 +105,7 @@ def validate():
     else:
         return redirect(url_for('generate'))
 
-@app.route('/details', methods=['GET','POST'])
+@app.route('/details', methods=['GET'])
 def details_page():
     if "verified" in session:
         return render_template('details.html', colleges=collegeList)
@@ -113,7 +113,7 @@ def details_page():
         return redirect(url_for('generate'))
 
 
-@app.route('/details', methods=['GET','POST'])
+@app.route('/details', methods=['POST'])
 def details():
     if 'phone_number' not in session or 'verified' not in session:
         return redirect(url_for('generate'))
