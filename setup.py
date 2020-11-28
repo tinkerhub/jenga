@@ -10,7 +10,8 @@ requirements = [
     "requests-oauthlib==1.3.0",
     "Werkzeug==1.0.1",
     "gunicorn",
-    "twilio"
+    "twilio",
+    "Flask-Cors==3.0.9"
 ]
 
 setup(
