@@ -1,12 +1,13 @@
 import os
 import sys
-from flask import Flask, session, request, flash, redirect, url_for, render_template
+from flask import Flask, session, request, flash, redirect, url_for, render_template, jsonify
 from dotenv import load_dotenv
 from twilio.rest import Client
 from deta import Deta
 from airtable import Airtable
 import requests
 from jenga import app
+from jenga.error import InvalidUsage
 import logging
 
 
@@ -24,33 +25,32 @@ deta = Deta(app.config.get("DETA_PROJECT_KEY"))
 db = deta.Base(app.config.get("DETA_BASE"))
 airtable = Airtable(app.config.get("AIRTABLE_BASE_KEY"), app.config.get("AIRTABLE_TABLE_NAME"), app.config.get("AIRTABLE_API_KEY"))
 collegesTable = Airtable(app.config.get("AIRTABLE_BASE_KEY"), "Campus", app.config.get("AIRTABLE_API_KEY"))
-rawcolleges = collegesTable.get_all()
+# rawcolleges = collegesTable.get_all()
 
-def getCollegeList(raw_list):
-    collegeList = [
-        {
-            "id": college.get("id"),
-            "name": college.get("fields").get("your campus/school name")
-        } for college in raw_list
-    ]
-    return collegeList
+# def getCollegeList(raw_list):
+#     collegeList = [
+#         {
+#             "id": college.get("id"),
+#             "name": college.get("fields").get("your campus/school name")
+#         } for college in raw_list
+#     ]
+#     return collegeList
 
-collegeList = getCollegeList(rawcolleges)
-logging.info(collegeList)
+# collegeList = getCollegeList(rawcolleges)
+# logging.info(collegeList)
 
 
-@app.route('/', methods=["GET"])
-def index_page():
-    return render_template("index.html")
+# @app.route('/', methods=["GET"])
+# def index_page():
+#     return render_template("index.html")
 
 @app.route('/', methods=["POST"])
 def generate():
-    number = request.form["number"]
+    number = request.json["number"]
     logging.info(number)
     if len(number) != 10:
         logging.info("Invalid Phone number")
-        flash("Invalid Phone number")
-        return redirect(url_for('generate'))
+        raise InvalidUsage("Invalid Phone number",status_code=417)
 
     session['phone_number'] = number
     # print("session phone number set")
@@ -59,20 +59,20 @@ def generate():
     if otp_code:
         send_otp_code("+91"+number, otp_code, 'sms')
         logging.info('Otp has been generated successfully')            
-        return redirect(url_for('validate'))  
+        return {"message":"Otp has been send. Check your number"}
         #code=307 does a POST request reference : https://stackoverflow.com/questions/15473626/make-a-post-request-while-redirecting-in-flask
     else:
         logging.info("Trouble with OTP")
-        return redirect(url_for('generate'))
+        raise InvalidUsage("OTP send failed",status_code=417)
     # except:
     #     e = sys.exc_info()[0]
     #     print("Error :", str(e), e)
     #     return redirect(url_for('generate'))
 
 
-@app.route('/validate', methods=['GET'])
-def otp_page():
-    return render_template('otp.html')
+# @app.route('/validate', methods=['GET'])
+# def otp_page():
+#     return render_template('otp.html')
 
 @app.route('/validate', methods=['POST'])
 def validate():
@@ -80,8 +80,7 @@ def validate():
     logging.info("entered_code : %s", entered_otp)
     if len(entered_otp) != 6:
         logging.info("Invalid OTP")
-        flash("Invalid OTP")
-        return redirect(url_for('validate'))
+        raise InvalidUsage("Invalid OTP",status_code=417)
 
     if 'phone_number' in session:
         phone_number = session['phone_number']
@@ -96,27 +95,48 @@ def validate():
                 logging.info("member already exists")
                 session["MembershipId"] = already_exists
                 session.pop('phone_number', None)
-                return render_template('exist.html')  # show exist.html with member ID
+                raise InvalidUsage("user already exist",status_code=419)
             else:
-                return redirect(url_for('details'))
+                return {"message":"successfully signed up"}
         else:
             logging.info("STATUS : %s" ,status)
-            return redirect(url_for('validate'))
+            raise InvalidUsage("status failed",status_code=417)
     else:
-        return redirect(url_for('generate'))
+        raise InvalidUsage("Time expired, retry again",status_code=404) 
+
+@app.route('/colleges', methods=['GET'])
+def get_college_list():
+    raw_college_list = collegesTable.get_all()
+    collegeList = [
+        {
+            "id": college.get("id"),
+            "name": college.get("fields").get("your campus/school name")
+        } for college in raw_college_list
+    ]
+    return jsonify(collegeList)
 
 @app.route('/details', methods=['GET'])
 def details_page():
+
+    number = session['phone_number']
+    already_exists = check_if_already_member(number)
+
+    if already_exists:
+        logging.info("member already exists")
+        session["MembershipId"] = already_exists
+        session.pop('phone_number', None)
+        raise InvalidUsage("user already exist",status_code=419)
+
     if "verified" in session:
-        return render_template('details.html', colleges=collegeList)
+        return {"verified":True}
     else:
-        return redirect(url_for('generate'))
+        raise InvalidUsage("Unauthorized access",status_code=401)
 
 
 @app.route('/details', methods=['POST'])
 def details():
     if 'phone_number' not in session or 'verified' not in session:
-        return redirect(url_for('generate'))
+        raise InvalidUsage("Unauthorized access",status_code=401)
 
     number = session['phone_number']
     already_exists = check_if_already_member(number)
@@ -124,9 +144,9 @@ def details():
         logging.info("member already exists")
         session["MembershipId"] = already_exists
         session.pop('phone_number', None)
-        return render_template('exist.html')
+        raise InvalidUsage("user already exist",status_code=419,payload={"memberID":session["MembershipId"]})
 
-    data = request.form.to_dict()
+    data = request.get_json()
     # data["AreasOfInterest"] = request.form.to_dict(flat=False)["AreasOfInterest"]  #removed this question from html
     if data["College"] == '':
         del data["College"]
@@ -141,11 +161,17 @@ def details():
         session["MembershipId"] = record["id"]
         session.pop('phone_number', None)
         session.pop('verified', None)
-        return render_template('sucess.html')
+        return {"message":"Successfully registered"}
     except:
         e = sys.exc_info()[0]
         logging.info("Error : %s", str(e))
-        return redirect(url_for('details'))
+        raise InvalidUsage(str(e),status_code=417)
+
+@app.errorhandler(InvalidUsage)
+def handle_invalid_usage(error):
+    response = jsonify(error.to_dict())
+    response.status_code = error.status_code
+    return response
 
 def check_if_already_member(phone_number):
     member = db.get(phone_number)
