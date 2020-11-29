@@ -70,9 +70,10 @@ def generate():
     #     return redirect(url_for('generate'))
 
 
-# @app.route('/validate', methods=['GET'])
-# def otp_page():
-#     return render_template('otp.html')
+@app.route('/validate', methods=['GET'])
+def otp_page():
+    return {"hello":session.get('phone_number')}
+    # return render_template('otp.html')
 
 @app.route('/validate', methods=['POST'])
 def validate():
