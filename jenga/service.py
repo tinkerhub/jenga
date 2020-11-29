@@ -57,7 +57,7 @@ def generate():
     # db.put({"key":number,"stage":"otp"})
     otp_code = make_otp_request(number)
     if otp_code:
-        send_otp_code("+91"+number, otp_code, 'sms')
+        # send_otp_code("+91"+number, otp_code, 'sms')
         logging.info('Otp has been generated successfully')            
         return {"message":"Otp has been send. Check your number"}
         #code=307 does a POST request reference : https://stackoverflow.com/questions/15473626/make-a-post-request-while-redirecting-in-flask
