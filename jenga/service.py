@@ -76,7 +76,7 @@ def generate():
 
 @app.route('/validate', methods=['POST'])
 def validate():
-    entered_otp = request.form["otp"]
+    entered_otp = request.json["otp"]
     logging.info("entered_code : %s", entered_otp)
     if len(entered_otp) != 6:
         logging.info("Invalid OTP")
