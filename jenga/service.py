@@ -77,7 +77,7 @@ def generate():
 
 @app.route('/auth', methods=['GET'])
 def get_auth_status():
-    return {"number":session.get('phone_number'),"memberShipID":session.get('MembershipId')}
+    return {"number":session.get('phone_number'),"memberShipID":session.get('MembershipId'),verified:session.get('verified')}
 
 
 
