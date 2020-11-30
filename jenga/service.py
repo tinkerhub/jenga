@@ -168,7 +168,7 @@ def details():
         session["MembershipId"] = record["id"]
         session.pop('phone_number', None)
         session.pop('verified', None)
-        return {"message":"Successfully registered"}
+        return {"message":"Successfully registered","memberShipID":record["id"]}
     except:
         e = sys.exc_info()[0]
         logging.info("Error : %s", str(e))
