@@ -58,6 +58,7 @@ def generate():
     otp_code = make_otp_request(number)
     if otp_code:
         # send_otp_code("+91"+number, otp_code, 'sms')
+        logging.info(otp_code)
         logging.info('Otp has been generated successfully')            
         return {"message":"Otp has been send. Check your number"}
         #code=307 does a POST request reference : https://stackoverflow.com/questions/15473626/make-a-post-request-while-redirecting-in-flask
@@ -101,7 +102,7 @@ def validate():
                 logging.info("member already exists")
                 session["MembershipId"] = already_exists
                 session.pop('phone_number', None)
-                raise InvalidUsage("user already exist",status_code=419)
+                raise InvalidUsage("user already exist",status_code=419,payload={"memberShipID":already_exists})
             else:
                 return {"message":"successfully signed up"}
         else:
@@ -116,7 +117,7 @@ def get_college_list():
     collegeList = [
         {
             "id": college.get("id"),
-            "name": college.get("fields").get("your campus/school name")
+            "name": college.get("fields").get("Your campus/ school name")
         } for college in raw_college_list
     ]
     return jsonify(collegeList)
@@ -172,6 +173,14 @@ def details():
         e = sys.exc_info()[0]
         logging.info("Error : %s", str(e))
         raise InvalidUsage(str(e),status_code=417)
+
+@app.route('/logout', methods=['GET'])
+def logout():
+    session.pop('phone_number', None)
+    session.pop('MembershipId', None)
+    session.pop('verified', None)
+    return {"message":"logged out successfully"}
+
 
 @app.errorhandler(InvalidUsage)
 def handle_invalid_usage(error):
