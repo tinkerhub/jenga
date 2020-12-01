@@ -12,8 +12,6 @@ class Config(object):
     AIRTABLE_BASE_KEY = os.getenv("AIRTABLE_BASE_KEY")
     AIRTABLE_TABLE_NAME = "Members"
     AIRTABLE_API_KEY = os.getenv("AIRTABLE_API_KEY")
-    SESSION_COOKIE_SAMESITE = 'None'
-    SESSION_COOKIE_SECURE=True
 class ProductionConfig(Config):
     DEBUG=False
     

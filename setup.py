@@ -11,7 +11,8 @@ requirements = [
     "Werkzeug==1.0.1",
     "gunicorn",
     "twilio",
-    "Flask-Cors==3.0.9"
+    "Flask-Cors==3.0.9",
+    "PyJWT==1.7.1"
 ]
 
 setup(

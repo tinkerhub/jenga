@@ -1,12 +1,14 @@
 import os
 import sys
-from flask import Flask, session, request, flash, redirect, url_for, render_template, jsonify, make_response
+from flask import Flask, request, flash, redirect, url_for, render_template, jsonify, make_response
 from dotenv import load_dotenv
 from twilio.rest import Client
 from deta import Deta
 from airtable import Airtable
 import requests
 from jenga import app
+from jenga.jwt.encode import jenga_jwt_encoder
+from jenga.jwt.decorator import token_required
 from jenga.error import InvalidUsage
 import logging
 
@@ -52,15 +54,15 @@ def generate():
         logging.info("Invalid Phone number")
         raise InvalidUsage("Invalid Phone number",status_code=417)
 
-    session['phone_number'] = number
     # print("session phone number set")
     # db.put({"key":number,"stage":"otp"})
     otp_code = make_otp_request(number)
     if otp_code:
         # send_otp_code("+91"+number, otp_code, 'sms')
         logging.info(otp_code)
-        logging.info('Otp has been generated successfully')            
-        return {"message":"Otp has been send. Check your number"}
+        logging.info('Otp has been generated successfully')
+        token = jenga_jwt_encoder(number=number)       
+        return {"message":"Otp has been send. Check your number",'token':token.decode('UTF-8')}
         #code=307 does a POST request reference : https://stackoverflow.com/questions/15473626/make-a-post-request-while-redirecting-in-flask
     else:
         logging.info("Trouble with OTP")
@@ -75,36 +77,36 @@ def generate():
 # def otp_page():
 #     return render_template('otp.html')
 
-@app.route('/auth', methods=['GET'])
-def get_auth_status():
-    return {"number":session.get('phone_number'),"memberShipID":session.get('MembershipId'),"verified":session.get('verified')}
-
+@app.route('/user', methods=['GET'])
+@token_required
+def get_auth_status(payload):
+    return jsonify(payload)
 
 
 @app.route('/validate', methods=['POST'])
-def validate():
+@token_required
+def validate(user):
     entered_otp = request.json["otp"]
     logging.info("entered_code : %s", entered_otp)
     if len(entered_otp) != 6:
         logging.info("Invalid OTP")
         raise InvalidUsage("Invalid OTP",status_code=417)
 
-    if 'phone_number' in session:
-        phone_number = session['phone_number']
+    if user.get("number") is not None:
+        phone_number = user['number']
         status, _ = verify_otp_code(entered_otp, phone_number)
         # db.update({"stage":"done","MembershipId":"RandomID"},key=phone_number)
         # status = True
         if status == True:
             logging.info("STATUS : %s", status)
-            session["verified"] = True
             already_exists = check_if_already_member(phone_number)
             if already_exists:
                 logging.info("member already exists")
-                session["MembershipId"] = already_exists
-                session.pop('phone_number', None)
-                raise InvalidUsage("user already exist",status_code=419,payload={"memberShipID":already_exists})
+                new_token=jenga_jwt_encoder(verified=True,memberShipID=already_exists)
+                raise InvalidUsage("user already exist",status_code=419,payload={"memberShipID":already_exists,"token":new_token.decode('UTF-8')})
             else:
-                return {"message":"successfully signed up"}
+                new_token = jenga_jwt_encoder(number=phone_number,verified=True)
+                return {"message":"successfully signed up","token":new_token.decode('UTF-8')}
         else:
             logging.info("STATUS : %s" ,status)
             raise InvalidUsage("status failed",status_code=417)
@@ -140,18 +142,18 @@ def get_college_list():
 #         raise InvalidUsage("Unauthorized access",status_code=401)
 
 
-@app.route('/details', methods=['GET'])
-def details():
-    if 'phone_number' not in session or 'verified' not in session:
+@app.route('/details', methods=['POST'])
+@token_required
+def details(user):
+    number = user.get("number")
+    if number is None or user.get("verified") is None:
         raise InvalidUsage("Unauthorized access",status_code=401)
 
-    number = session['phone_number']
     already_exists = check_if_already_member(number)
     if already_exists:
         logging.info("member already exists")
-        session["MembershipId"] = already_exists
-        session.pop('phone_number', None)
-        raise InvalidUsage("user already exist",status_code=419,payload={"memberID":session["MembershipId"]})
+        new_token = jenga_jwt_encoder(memberShipID=already_exists,verified=True)
+        raise InvalidUsage("user already exist",status_code=419,payload={"memberID":already_exists,"payload":new_token})
 
     data = request.get_json()
     # data["AreasOfInterest"] = request.form.to_dict(flat=False)["AreasOfInterest"]  #removed this question from html
@@ -162,29 +164,16 @@ def details():
     data["MobileNumber"] = int(number)
     logging.info(data) 
     try:
-        # record = airtable.insert(data)
-        record={"id":"rec0527aMGoPSPzOR"}
+        record = airtable.insert(data)
         logging.info(record)
-        # db.put({"key":number,"MembershipId":record["id"]})
-        session["MembershipId"] = record["id"]
-        session.pop('phone_number', None)
-        session.pop('verified', None)
-        return {"message":"Successfully registered","memberShipID":record["id"]}
+        db.put({"key":number,"MembershipId":record["id"]})
+        new_token = jenga_jwt_encoder(memberShipID=record["id"],verified=True)
+        return {"message":"Successfully registered","memberShipID":record["id"],"token":new_token}
     except requests.HTTPError as exception:
         e = sys.exc_info()[0]
         logging.info("Error : %s", str(e))
         print(exception)
         raise InvalidUsage(str(e),status_code=417)
-
-@app.route('/logout', methods=['GET','DELETE'])
-def logout():
-    session.pop('phone_number', None)
-    session.pop('MembershipId', None)
-    session.pop('verified', None)
-    logging.info(session.get("MembershipId"))
-    res = make_response({"message":"logged out successfully"})
-    res.set_cookie(app.session_cookie_name,expires=0)
-    return res
 
 
 @app.errorhandler(InvalidUsage)
