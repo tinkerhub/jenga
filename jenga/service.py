@@ -58,7 +58,7 @@ def generate():
     # db.put({"key":number,"stage":"otp"})
     otp_code = make_otp_request(number)
     if otp_code:
-        # send_otp_code("+91"+number, otp_code, 'sms')
+        send_otp_code("+91"+number, otp_code, 'sms')
         logging.info(otp_code)
         logging.info('Otp has been generated successfully')
         token = jenga_jwt_encoder(number=number)       
