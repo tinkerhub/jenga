@@ -1,6 +1,6 @@
 import os
 import sys
-from flask import Flask, session, request, flash, redirect, url_for, render_template, jsonify
+from flask import Flask, session, request, flash, redirect, url_for, render_template, jsonify, make_response
 from dotenv import load_dotenv
 from twilio.rest import Client
 from deta import Deta
@@ -122,25 +122,25 @@ def get_college_list():
     ]
     return jsonify(collegeList)
 
+# @app.route('/details', methods=['GET'])
+# def details_page():
+
+#     number = session['phone_number']
+#     already_exists = check_if_already_member(number)
+
+#     if already_exists:
+#         logging.info("member already exists")
+#         session["MembershipId"] = already_exists
+#         session.pop('phone_number', None)
+#         raise InvalidUsage("user already exist",status_code=419)
+
+#     if "verified" in session:
+#         return {"verified":True}
+#     else:
+#         raise InvalidUsage("Unauthorized access",status_code=401)
+
+
 @app.route('/details', methods=['GET'])
-def details_page():
-
-    number = session['phone_number']
-    already_exists = check_if_already_member(number)
-
-    if already_exists:
-        logging.info("member already exists")
-        session["MembershipId"] = already_exists
-        session.pop('phone_number', None)
-        raise InvalidUsage("user already exist",status_code=419)
-
-    if "verified" in session:
-        return {"verified":True}
-    else:
-        raise InvalidUsage("Unauthorized access",status_code=401)
-
-
-@app.route('/details', methods=['POST'])
 def details():
     if 'phone_number' not in session or 'verified' not in session:
         raise InvalidUsage("Unauthorized access",status_code=401)
@@ -160,26 +160,31 @@ def details():
     else:
         data["College"] = [data["College"]] # for some reason, Airtable requires a list of ids
     data["MobileNumber"] = int(number)
-    logging.info(data)
+    logging.info(data) 
     try:
-        record = airtable.insert(data)
+        # record = airtable.insert(data)
+        record={"id":"rec0527aMGoPSPzOR"}
         logging.info(record)
-        db.put({"key":number,"MembershipId":record["id"]})
+        # db.put({"key":number,"MembershipId":record["id"]})
         session["MembershipId"] = record["id"]
         session.pop('phone_number', None)
         session.pop('verified', None)
         return {"message":"Successfully registered","memberShipID":record["id"]}
-    except:
+    except requests.HTTPError as exception:
         e = sys.exc_info()[0]
         logging.info("Error : %s", str(e))
+        print(exception)
         raise InvalidUsage(str(e),status_code=417)
 
-@app.route('/logout', methods=['GET'])
+@app.route('/logout', methods=['GET','DELETE'])
 def logout():
     session.pop('phone_number', None)
     session.pop('MembershipId', None)
     session.pop('verified', None)
-    return {"message":"logged out successfully"}
+    logging.info(session.get("MembershipId"))
+    res = make_response({"message":"logged out successfully"})
+    res.set_cookie(app.session_cookie_name,expires=0)
+    return res
 
 
 @app.errorhandler(InvalidUsage)
