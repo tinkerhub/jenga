@@ -29,7 +29,9 @@ generateotp_url = "https://api.generateotp.com/"
 load_dotenv()
 twilio_client = Client()
 
-
+"""
+    deta and airtable configurations
+"""
 deta = Deta(app.config.get("DETA_PROJECT_KEY"))
 db = deta.Base(app.config.get("DETA_BASE"))
 airtable = Airtable(
@@ -40,6 +42,10 @@ airtable = Airtable(
 collegesTable = Airtable(
     app.config.get("AIRTABLE_BASE_KEY"), "Campus", app.config.get("AIRTABLE_API_KEY")
 )
+
+"""
+    App Routes
+"""
 
 
 @app.route("/", methods=["POST"])
@@ -211,6 +217,11 @@ def handle_invalid_usage(error):
     response = jsonify(error.to_dict())
     response.status_code = error.status_code
     return response
+
+
+"""
+    App Utility functions
+"""
 
 
 def check_if_already_member(phone_number):
