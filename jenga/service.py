@@ -6,7 +6,6 @@ from flask import (
     jsonify,
 )
 from dotenv import load_dotenv
-from twilio.rest import Client
 from deta import Deta
 from airtable import Airtable
 import requests
@@ -15,6 +14,8 @@ from jenga import app
 ## jwt utility tools
 from jenga.jwt.encode import jenga_jwt_encoder
 from jenga.jwt.decorator import token_required
+
+from jenga.utils.msg91 import sendmessage
 
 # error handler
 from jenga.error import InvalidUsage
@@ -27,7 +28,6 @@ logging.basicConfig(
 generateotp_url = "https://api.generateotp.com/"
 
 load_dotenv()
-twilio_client = Client()
 
 """
     deta and airtable configurations
@@ -65,7 +65,7 @@ def generate():
     # db.put({"key":number,"stage":"otp"})
     otp_code = make_otp_request(number)
     if otp_code:
-        send_otp_code("+91" + number, otp_code, "sms")
+        send_otp_code("+91" + number, otp_code)
         logging.info(otp_code)
         logging.info("Otp has been generated successfully")
         token = jenga_jwt_encoder(number=number)
@@ -252,11 +252,10 @@ def make_otp_request(phone_number):
         return otp_code
 
 
-def send_otp_code(phone_number, otp_code, channel):
-    _ = twilio_client.messages.create(
-        to=f"{phone_number}",
-        from_=os.getenv("TWILIO_NUMBER"),
-        body=f"Welcome to TinkerHub! Your one time password is {otp_code}",
+def send_otp_code(phone_number, otp_code):
+    _ = sendmessage.send_sms(
+        mobile=phone_number,
+        message=f"Welcome to TinkerHub! Your one time password is {otp_code}",
     )
 
 

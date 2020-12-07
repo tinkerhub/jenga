@@ -14,6 +14,7 @@ class Config(object):
     AIRTABLE_BASE_KEY = os.getenv("AIRTABLE_BASE_KEY")
     AIRTABLE_TABLE_NAME = "Members"
     AIRTABLE_API_KEY = os.getenv("AIRTABLE_API_KEY")
+    MSG91_BASE_KEY = os.getenv("MSG91_BASE_KEY")
 
 
 class ProductionConfig(Config):
