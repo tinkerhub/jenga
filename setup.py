@@ -10,7 +10,6 @@ requirements = [
     "requests-oauthlib==1.3.0",
     "Werkzeug==1.0.1",
     "gunicorn",
-    "twilio",
     "Flask-Cors==3.0.9",
     "PyJWT==1.7.1",
     "flake8==3.8.4",
