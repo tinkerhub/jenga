@@ -7,7 +7,6 @@ from flask import (
 )
 from dotenv import load_dotenv
 from deta import Deta
-from airtable import Airtable
 import requests
 from jenga import app
 
@@ -15,7 +14,8 @@ from jenga import app
 from jenga.jwt.encode import jenga_jwt_encoder
 from jenga.jwt.decorator import token_required
 
-from jenga.utils.msg91 import sendmessage
+from jenga.services.msg91 import sendmessage
+from jenga.services.airtable import AirTableDB
 
 # error handler
 from jenga.error import InvalidUsage
@@ -34,13 +34,9 @@ load_dotenv()
 """
 deta = Deta(app.config.get("DETA_PROJECT_KEY"))
 db = deta.Base(app.config.get("DETA_BASE"))
-airtable = Airtable(
-    app.config.get("AIRTABLE_BASE_KEY"),
-    app.config.get("AIRTABLE_TABLE_NAME"),
-    app.config.get("AIRTABLE_API_KEY"),
-)
-collegesTable = Airtable(
-    app.config.get("AIRTABLE_BASE_KEY"), "Campus", app.config.get("AIRTABLE_API_KEY")
+airtable_db = AirTableDB(
+    base_key=app.config.get("AIRTABLE_BASE_KEY"),
+    api_key=app.config.get("AIRTABLE_API_KEY"),
 )
 
 """
@@ -146,17 +142,19 @@ def validate(user):
 @token_required
 def get_college_list():
     """
-    get all colleges saved in DB from deta
+    get all colleges saved in DB from airtable
     """
-    raw_college_list = collegesTable.get_all()
-    collegeList = [
-        {
-            "id": college.get("id"),
-            "name": college.get("fields").get("Your campus/ school name"),
-        }
-        for college in raw_college_list
-    ]
-    return jsonify(collegeList)
+    college_list = airtable_db.get_colleges()
+    return jsonify(college_list)
+
+
+@app.route("/skills", methods=["GET"])
+def get_skills_list():
+    """
+    get all skills saved in DB from airtable
+    """
+    skill_list = airtable_db.get_skills()
+    return jsonify(skill_list)
 
 
 @app.route("/details", methods=["POST"])
@@ -193,7 +191,7 @@ def details(user):
     data["MobileNumber"] = int(number)
     logging.info(data)
     try:
-        record = airtable.insert(data)
+        record = airtable_db.insert_member_details(data)
         logging.info(record)
         db.put({"key": number, "MembershipId": record["id"]})
         new_token = jenga_jwt_encoder(memberShipID=record["id"], verified=True)
