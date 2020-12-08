@@ -1,13 +1,10 @@
 import os
 import sys
-from flask import (
-    request,
-    redirect,
-    jsonify,
-)
+import requests
+from flask import request, jsonify
 from dotenv import load_dotenv
 from deta import Deta
-import requests
+
 from jenga import app
 
 ## jwt utility tools
@@ -16,6 +13,7 @@ from jenga.jwt.decorator import token_required
 
 from jenga.services.msg91 import sendmessage
 from jenga.services.airtable import AirTableDB
+from jenga.services.otp import OTP
 
 # error handler
 from jenga.error import InvalidUsage
@@ -25,7 +23,6 @@ import logging
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s : %(levelname)s : %(name)s : %(message)s"
 )
-generateotp_url = "https://api.generateotp.com/"
 
 load_dotenv()
 
@@ -38,9 +35,25 @@ airtable_db = AirTableDB(
     base_key=app.config.get("AIRTABLE_BASE_KEY"),
     api_key=app.config.get("AIRTABLE_API_KEY"),
 )
+otp = OTP()
 
 """
-    App Routes
+    Auth Route
+"""
+
+
+@app.route("/user", methods=["GET"])
+@token_required
+def get_auth_status(user):
+    """
+    returns user information of status
+    number, verified, memberShipID
+    """
+    return jsonify(user)
+
+
+"""
+    Membership Routes
 """
 
 
@@ -59,9 +72,9 @@ def generate():
 
     # print("session phone number set")
     # db.put({"key":number,"stage":"otp"})
-    otp_code = make_otp_request(number)
+    otp_code = otp.generate_otp(phone_number=number)
     if otp_code:
-        send_otp_code("+91" + number, otp_code)
+        otp.send_otp_sms(otp_code, number)
         logging.info(otp_code)
         logging.info("Otp has been generated successfully")
         token = jenga_jwt_encoder(number=number)
@@ -77,16 +90,6 @@ def generate():
     #     e = sys.exc_info()[0]
     #     print("Error :", str(e), e)
     #     return redirect(url_for('generate'))
-
-
-@app.route("/user", methods=["GET"])
-@token_required
-def get_auth_status(user):
-    """
-    returns user information of status
-    number, verified, memberShipID
-    """
-    return jsonify(user)
 
 
 @app.route("/validate", methods=["POST"])
@@ -106,7 +109,7 @@ def validate(user):
 
     if user.get("number") is not None:
         phone_number = user["number"]
-        status, _ = verify_otp_code(entered_otp, phone_number)
+        status, _ = otp.verify_otp(entered_otp, phone_number)
         # db.update({"stage":"done","MembershipId":"RandomID"},key=phone_number)
         # status = True
         if status is True:
@@ -136,25 +139,6 @@ def validate(user):
             raise InvalidUsage("status failed", status_code=417)
     else:
         raise InvalidUsage("Time expired, retry again", status_code=404)
-
-
-@app.route("/colleges", methods=["GET"])
-@token_required
-def get_college_list():
-    """
-    get all colleges saved in DB from airtable
-    """
-    college_list = airtable_db.get_colleges()
-    return jsonify(college_list)
-
-
-@app.route("/skills", methods=["GET"])
-def get_skills_list():
-    """
-    get all skills saved in DB from airtable
-    """
-    skill_list = airtable_db.get_skills()
-    return jsonify(skill_list)
 
 
 @app.route("/details", methods=["POST"])
@@ -189,6 +173,7 @@ def details(user):
             data["College"]
         ]  # for some reason, Airtable requires a list of ids
     data["MobileNumber"] = int(number)
+    data["My_Skills"] = data["My_Skills"].split(",")
     logging.info(data)
     try:
         record = airtable_db.insert_member_details(data)
@@ -205,6 +190,36 @@ def details(user):
         logging.info("Error : %s", str(e))
         print(exception)
         raise InvalidUsage(str(e), status_code=417)
+
+
+"""
+    Utility Routes
+"""
+
+
+@app.route("/colleges", methods=["GET"])
+@token_required
+def get_college_list():
+    """
+    get all colleges saved in DB from airtable
+    """
+    college_list = airtable_db.get_colleges()
+    return jsonify(college_list)
+
+
+@app.route("/skills", methods=["GET"])
+@token_required
+def get_skills_list():
+    """
+    get all skills saved in DB from airtable
+    """
+    skill_list = airtable_db.get_skills()
+    return jsonify(skill_list)
+
+
+"""
+    Error Handler Routes
+"""
 
 
 @app.errorhandler(InvalidUsage)
@@ -228,33 +243,6 @@ def check_if_already_member(phone_number):
         if "MembershipId" in member:
             return member["MembershipId"]
     return False
-
-
-def verify_otp_code(otp_code, phone_number):
-    r = requests.post(f"{generateotp_url}/validate/{otp_code}/{phone_number}")
-    if r.status_code == 200:
-        data = r.json()
-        status = data["status"]
-        message = data["message"]
-        return status, message
-    return None, None
-
-
-def make_otp_request(phone_number):
-    r = requests.post(
-        f"{generateotp_url}/generate", data={"initiator_id": phone_number}
-    )
-    if r.status_code == 201:
-        data = r.json()
-        otp_code = str(data["code"])
-        return otp_code
-
-
-def send_otp_code(phone_number, otp_code):
-    _ = sendmessage.send_sms(
-        mobile=phone_number,
-        message=f"Welcome to TinkerHub! Your one time password is {otp_code}",
-    )
 
 
 def split_code(code):
