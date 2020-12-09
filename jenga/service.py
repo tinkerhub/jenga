@@ -74,7 +74,7 @@ def generate():
     # db.put({"key":number,"stage":"otp"})
     otp_code = otp.generate_otp(phone_number=number)
     if otp_code:
-        otp.send_otp_sms(otp_code, number)
+        otp.send_otp_sms(otp_code, "+91" + number)
         logging.info(otp_code)
         logging.info("Otp has been generated successfully")
         token = jenga_jwt_encoder(number=number)
@@ -199,7 +199,7 @@ def details(user):
 
 @app.route("/colleges", methods=["GET"])
 @token_required
-def get_college_list():
+def get_college_list(user):
     """
     get all colleges saved in DB from airtable
     """

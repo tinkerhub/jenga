@@ -30,5 +30,5 @@ class sendmessage:
         postdata = postdata.encode("utf-8")
         req = urllib.request.Request(url, postdata)
         response = urllib.request.urlopen(req)
-        output = response.read()  # Get Response
+        output = response.read().decode("utf-8")  # Get Response
         return output
