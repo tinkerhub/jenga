@@ -22,4 +22,4 @@ package-lock.json
 .idea/
 env
 .env
-branch.bat
+scripts

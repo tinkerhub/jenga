@@ -173,7 +173,7 @@ def details(user):
             data["College"]
         ]  # for some reason, Airtable requires a list of ids
     data["MobileNumber"] = int(number)
-    data["My_Skills"] = data["My_Skills"].split(",")
+    data["My_Skills"] = data["My_Skills"].strip().split(",")
     logging.info(data)
     try:
         record = airtable_db.insert_member_details(data)
@@ -183,7 +183,7 @@ def details(user):
         return {
             "message": "Successfully registered",
             "memberShipID": record["id"],
-            "token": new_token,
+            "token": new_token.decode("UTF-8"),
         }
     except requests.HTTPError as exception:
         e = sys.exc_info()[0]
@@ -198,8 +198,7 @@ def details(user):
 
 
 @app.route("/colleges", methods=["GET"])
-@token_required
-def get_college_list(user):
+def get_college_list():
     """
     get all colleges saved in DB from airtable
     """
@@ -208,7 +207,6 @@ def get_college_list(user):
 
 
 @app.route("/skills", methods=["GET"])
-@token_required
 def get_skills_list():
     """
     get all skills saved in DB from airtable
