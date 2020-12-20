@@ -35,3 +35,10 @@ class AirTableDB:
             for skill in raw_skills_list
         ]
         return skills_list
+
+    def check_member_exist(self, member):
+        member = self.member_table.search("MobileNumber", member)
+        if len(member) != 0:
+            return member[0]["id"]
+        else:
+            return False

@@ -1,5 +1,6 @@
 import os
 import sys
+import airtable
 import requests
 from flask import request, jsonify
 from dotenv import load_dotenv
@@ -114,7 +115,7 @@ def validate(user):
         # status = True
         if status is True:
             logging.info("STATUS : %s", status)
-            already_exists = check_if_already_member(phone_number)
+            already_exists = airtable_db.check_member_exist(phone_number)
             if already_exists:
                 logging.info("member already exists")
                 new_token = jenga_jwt_encoder(
@@ -154,7 +155,7 @@ def details(user):
     if number is None or user.get("verified") is None:
         raise InvalidUsage("Unauthorized access", status_code=401)
 
-    already_exists = check_if_already_member(number)
+    already_exists = airtable_db.check_member_exist(number)
     if already_exists:
         logging.info("member already exists")
         new_token = jenga_jwt_encoder(memberShipID=already_exists, verified=True)
@@ -178,7 +179,7 @@ def details(user):
     try:
         record = airtable_db.insert_member_details(data)
         logging.info(record)
-        db.put({"key": number, "MembershipId": record["id"]})
+        # db.put({"key": number, "MembershipId": record["id"]})
         new_token = jenga_jwt_encoder(memberShipID=record["id"], verified=True)
         return {
             "message": "Successfully registered",
