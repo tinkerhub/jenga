@@ -4,7 +4,7 @@ requirements = [
     "airtable-python-wrapper==0.15.0",
     "deta==0.6",
     "Flask==1.1.2",
-    "Jinja2==2.11.1",
+    "jinja2>=2.11.3",
     "python-dotenv==0.14.0",
     "requests==2.23.0",
     "requests-oauthlib==1.3.0",
