@@ -1,1 +1,1 @@
-web: gunicorn jenga:run
+web: gunicorn jenga.run:app

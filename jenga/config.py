@@ -1,6 +1,8 @@
 import os
+
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
 TOP_LEVEL_DIR = os.path.abspath(os.curdir)
+
 
 class Config(object):
     DEBUG = False
@@ -12,15 +14,18 @@ class Config(object):
     AIRTABLE_BASE_KEY = os.getenv("AIRTABLE_BASE_KEY")
     AIRTABLE_TABLE_NAME = "Members"
     AIRTABLE_API_KEY = os.getenv("AIRTABLE_API_KEY")
+    MSG91_BASE_KEY = os.getenv("MSG91_BASE_KEY")
+
 
 class ProductionConfig(Config):
-    DEBUG=False
-    
+    DEBUG = False
+
 
 class StagingConfig(Config):
-    DEVELOPMENT=True
-    DEBUG=True
+    DEVELOPMENT = True
+    DEBUG = True
+
 
 class TestingConfig(Config):
-    TESTING=True
-    DEBUG=True
+    TESTING = True
+    DEBUG = True

@@ -10,13 +10,17 @@ requirements = [
     "requests-oauthlib==1.3.0",
     "Werkzeug==1.0.1",
     "gunicorn",
-    "twilio"
+    "Flask-Cors==3.0.9",
+    "PyJWT==1.7.1",
+    "flake8==3.8.4",
+    "black==20.8b1",
 ]
 
 setup(
     name="jenga",
     version="0.0.1",
     zip_safe=False,
-    packages=find_packages(exclude=['tests']),
+    packages=find_packages(exclude=["tests"]),
     include_package_data=True,
-    install_requires=requirements)
+    install_requires=requirements,
+)
