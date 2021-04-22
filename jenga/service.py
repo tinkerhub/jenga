@@ -4,7 +4,6 @@ import airtable
 import requests
 from flask import request, jsonify
 from dotenv import load_dotenv
-from deta import Deta
 
 from jenga import app
 
@@ -30,8 +29,6 @@ load_dotenv()
 """
     deta and airtable configurations
 """
-deta = Deta(app.config.get("DETA_PROJECT_KEY"))
-db = deta.Base(app.config.get("DETA_BASE"))
 airtable_db = AirTableDB(
     base_key=app.config.get("AIRTABLE_BASE_KEY"),
     api_key=app.config.get("AIRTABLE_API_KEY"),
@@ -167,14 +164,17 @@ def details(user):
 
     data = request.get_json()
     # data["AreasOfInterest"] = request.form.to_dict(flat=False)["AreasOfInterest"]  #removed this question from html
-    if data["College"] == "":
-        del data["College"]
-    else:
-        data["College"] = [
-            data["College"]
-        ]  # for some reason, Airtable requires a list of ids
+    if data["RegistrationType"] == "Student":
+        if data["College"] == "":
+            del data["College"]
+        else:
+            data["College"] = [
+                data["College"]
+            ]  # for some reason, Airtable requires a list of ids
     data["MobileNumber"] = int(number)
-    data["My_Skills"] = data["My_Skills"].strip().split(",")
+    if data.get("My_Skills"):
+        data["My_Skills"] = data.get("My_Skills").strip().split(",")
+
     logging.info(data)
     try:
         record = airtable_db.insert_member_details(data)
