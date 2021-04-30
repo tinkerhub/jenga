@@ -164,13 +164,9 @@ def details(user):
 
     data = request.get_json()
     # data["AreasOfInterest"] = request.form.to_dict(flat=False)["AreasOfInterest"]  #removed this question from html
-    if data["RegistrationType"] == "Student":
-        if data["College"] == "":
-            del data["College"]
-        else:
-            data["College"] = [
-                data["College"]
-            ]  # for some reason, Airtable requires a list of ids
+    if data.get("College"):
+        data["College"] = [data["College"]]
+
     data["MobileNumber"] = int(number)
     if data.get("My_Skills"):
         data["My_Skills"] = data.get("My_Skills").strip().split(",")
