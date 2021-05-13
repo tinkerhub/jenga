@@ -33,7 +33,11 @@ airtable_db = AirTableDB(
     base_key=app.config.get("AIRTABLE_BASE_KEY"),
     api_key=app.config.get("AIRTABLE_API_KEY"),
 )
-otp = OTP()
+otp = OTP(
+    account_key=app.config.get("TWILIO_ACCOUNT_SID"),
+    token_key=app.config.get("TWILIO_TOKEN_KEY"),
+    from_number=app.config.get("TWILIO_PHONE_NUMBER"),
+)
 
 """
     Auth Route

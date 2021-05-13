@@ -1,4 +1,5 @@
 import requests
+from twilio.rest import Client
 from .msg91 import sendmessage
 
 
@@ -9,8 +10,10 @@ class OTP:
     - Verification - Generation
     """
 
-    def __init__(self):
+    def __init__(self, account_key, token_key, from_number):
         self.url = "https://api.generateotp.com"
+        self.twilio = Client(account_key, token_key)
+        self.from_number = from_number
 
     def generate_otp(self, phone_number):
         r = requests.post(f"{self.url}/generate", data={"initiator_id": phone_number})
@@ -29,7 +32,12 @@ class OTP:
         return None, None
 
     def send_otp_sms(self, otp_code, phone_number):
-        _ = sendmessage.send_sms(
-            mobile=phone_number,
-            message=f"Welcome to TinkerHub! Your one time password is {otp_code}",
+        _ = self.twilio.messages.create(
+            to=phone_number,
+            from_=self.from_number,
+            body=f"Welcome to TinkerHub! Your one time password is {otp_code}",
         )
+        # _ = sendmessage.send_sms(
+        #     mobile=phone_number,
+        #     message=f"Welcome to TinkerHub! Your one time password is {otp_code}",
+        # )

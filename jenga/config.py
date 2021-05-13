@@ -15,6 +15,9 @@ class Config(object):
     AIRTABLE_TABLE_NAME = "Members"
     AIRTABLE_API_KEY = os.getenv("AIRTABLE_API_KEY")
     MSG91_BASE_KEY = os.getenv("MSG91_BASE_KEY")
+    TWILIO_TOKEN_KEY = os.getenv("TWILIO_TOKEN_KEY")
+    TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
+    TWILIO_PHONE_NUMBER = os.getenv("TWILIO_PHONE_NUMBER")
 
 
 class ProductionConfig(Config):

@@ -14,6 +14,7 @@ requirements = [
     "PyJWT==1.7.1",
     "flake8==3.8.4",
     "black==20.8b1",
+    "twilio==6.58.0",
 ]
 
 setup(
