@@ -1,7 +1,4 @@
-import urllib
-import urllib.request
-import urllib.parse
-
+import http
 from jenga import app
 
 
@@ -11,25 +8,38 @@ class sendmessage:
     """
 
     @staticmethod
-    def send_sms(mobile, message):
+    def send_otp(mobile):
         authkey = app.config.get("MSG91_BASE_KEY")
-        route = "4"
-        sender = "Tinkerhub"
-        mobiles = mobile
+        template_id = app.config.get("MSG91_TEMPLATE_ID")
         # Prepare you post parameters
-        values = {
-            "authkey": authkey,
-            "mobiles": mobiles,
-            "message": message,
-            "sender": sender,
-            "route": route,
-            "country": 91,
-        }
-        url = "http://api.msg91.com/api/sendhttp.php"  # API URL
-        postdata = urllib.parse.urlencode(values)  # URL encoding the data here.
-        postdata = postdata.encode("utf-8")
-        req = urllib.request.Request(url, postdata)
-        response = urllib.request.urlopen(req)
-        output = response.read().decode("utf-8")  # Get Response
-        print(output)
-        return output
+        conn = http.client.HTTPSConnection("api.msg91.com")
+        headers = {"content-type": "application/json"}
+
+        conn.request(
+            "GET",
+            f"/api/v5/otp?template_id={template_id}&mobile={mobile}&authkey={authkey}",
+            "",
+            headers,
+        )
+        res = conn.getresponse()
+        data = res.read()
+        print(f"-------------{mobile}------------------")
+        data = data.decode("utf-8")
+        print(data)
+        return data
+
+    @staticmethod
+    def verify_otp(mobile, otp):
+        authkey = app.config.get("MSG91_BASE_KEY")
+        conn = http.client.HTTPSConnection("api.msg91.com")
+        conn.request(
+            "GET", f"/api/v5/otp/verify?authkey={authkey}&mobile={mobile}&otp={otp}"
+        )
+        print(f"-------------{mobile}------------------")
+        res = conn.getresponse()
+        data = res.read()
+
+        data = data.decode("utf-8")
+        success = "error" not in data
+        print(data)
+        return success

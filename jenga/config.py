@@ -18,6 +18,7 @@ class Config(object):
     TWILIO_TOKEN_KEY = os.getenv("TWILIO_TOKEN_KEY")
     TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
     TWILIO_PHONE_NUMBER = os.getenv("TWILIO_PHONE_NUMBER")
+    MSG91_TEMPLATE_ID = os.getenv("MSG91_TEMPLATE_ID")
 
 
 class ProductionConfig(Config):

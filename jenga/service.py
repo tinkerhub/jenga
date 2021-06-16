@@ -74,20 +74,14 @@ def generate():
 
     # print("session phone number set")
     # db.put({"key":number,"stage":"otp"})
-    otp_code = otp.generate_otp(phone_number=number)
-    if otp_code:
-        otp.send_otp_sms(otp_code, "+91" + number)
-        logging.info(otp_code)
-        logging.info("Otp has been generated successfully")
-        token = jenga_jwt_encoder(number=number)
-        return {
-            "message": "Otp has been send. Check your number",
-            "token": token.decode("UTF-8"),
-        }
-        # code=307 does a POST request reference : https://stackoverflow.com/questions/15473626/make-a-post-request-while-redirecting-in-flask
-    else:
-        logging.info("Trouble with OTP")
-        raise InvalidUsage("OTP send failed", status_code=417)
+    sendmessage.send_otp("91" + number)
+    logging.info("Otp has been generated successfully")
+    token = jenga_jwt_encoder(number=number)
+    return {
+        "message": "Otp has been send. Check your number",
+        "token": token.decode("UTF-8"),
+    }
+    # code=307 does a POST request reference : https://stackoverflow.com/questions/15473626/make-a-post-request-while-redirecting-in-flask
     # except:
     #     e = sys.exc_info()[0]
     #     print("Error :", str(e), e)
@@ -105,13 +99,13 @@ def validate(user):
     """
     entered_otp = request.json["otp"]
     logging.info("entered_code : %s", entered_otp)
-    if len(entered_otp) != 6:
+    if len(entered_otp) != 4:
         logging.info("Invalid OTP")
         raise InvalidUsage("Invalid OTP", status_code=417)
 
     if user.get("number") is not None:
         phone_number = user["number"]
-        status, _ = otp.verify_otp(entered_otp, phone_number)
+        status = sendmessage.verify_otp("91" + phone_number, entered_otp)
         # db.update({"stage":"done","MembershipId":"RandomID"},key=phone_number)
         # status = True
         if status is True:
