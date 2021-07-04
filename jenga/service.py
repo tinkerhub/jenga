@@ -13,7 +13,6 @@ from jenga.jwt.decorator import token_required
 
 from jenga.services.msg91 import sendmessage
 from jenga.services.airtable import AirTableDB
-from jenga.services.otp import OTP
 
 # error handler
 from jenga.error import InvalidUsage
@@ -32,11 +31,6 @@ load_dotenv()
 airtable_db = AirTableDB(
     base_key=app.config.get("AIRTABLE_BASE_KEY"),
     api_key=app.config.get("AIRTABLE_API_KEY"),
-)
-otp = OTP(
-    account_key=app.config.get("TWILIO_ACCOUNT_SID"),
-    token_key=app.config.get("TWILIO_TOKEN_KEY"),
-    from_number=app.config.get("TWILIO_PHONE_NUMBER"),
 )
 
 """
@@ -74,7 +68,7 @@ def generate():
 
     # print("session phone number set")
     # db.put({"key":number,"stage":"otp"})
-    sendmessage.send_otp("91" + number)
+    sendmessage.send_otp(number)
     logging.info("Otp has been generated successfully")
     token = jenga_jwt_encoder(number=number)
     return {
@@ -86,6 +80,33 @@ def generate():
     #     e = sys.exc_info()[0]
     #     print("Error :", str(e), e)
     #     return redirect(url_for('generate'))
+
+
+@app.route("/retry", methods=["POST"])
+@token_required
+def retry_otp(user):
+    """
+    to send otp again when its not received
+    token is required
+    payload : {
+        "retry_type":"voice or text"
+    }
+    """
+    type_of_retry = request.json["retry_type"]
+    number = user.get("number")
+
+    if not (type_of_retry == "voice" or type_of_retry == "text"):
+        logging.info("Invalid retry type")
+        raise InvalidUsage("Invalid otp retry type", status_code=417)
+
+    data = sendmessage.retry_otp(mobile=number, type=type_of_retry)
+    print(data)
+    if data["type"] == "success":
+        logging.info("otp retry success")
+        return {"success": 200}
+    else:
+        logging.error(data["message"])
+        raise InvalidUsage(data["message"], status_code=417)
 
 
 @app.route("/validate", methods=["POST"])
@@ -105,7 +126,7 @@ def validate(user):
 
     if user.get("number") is not None:
         phone_number = user["number"]
-        status = sendmessage.verify_otp("91" + phone_number, entered_otp)
+        status = sendmessage.verify_otp(phone_number, entered_otp)
         # db.update({"stage":"done","MembershipId":"RandomID"},key=phone_number)
         # status = True
         if status is True:
@@ -223,20 +244,3 @@ def handle_invalid_usage(error):
     response = jsonify(error.to_dict())
     response.status_code = error.status_code
     return response
-
-
-"""
-    App Utility functions
-"""
-
-
-def check_if_already_member(phone_number):
-    member = db.get(phone_number)
-    if member:
-        if "MembershipId" in member:
-            return member["MembershipId"]
-    return False
-
-
-def split_code(code):
-    return " ".join(code)
